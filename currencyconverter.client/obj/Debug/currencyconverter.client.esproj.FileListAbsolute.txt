@@ -1,0 +1,1 @@
+C:\Users\jumpi\Documents\bootcamp_elective\currency_converter\currencyconverter.client\obj\Debug\currencyconverter.client.esproj.CoreCompileInputs.cache

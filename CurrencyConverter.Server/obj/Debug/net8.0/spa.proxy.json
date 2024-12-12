@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:59062",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "C:\\Users\\jumpi\\Documents\\bootcamp_elective\\currency_converter\\CurrencyConverter.Server\\..\\currencyconverter.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}
