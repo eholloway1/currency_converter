@@ -1,8 +1,8 @@
 ﻿namespace Currency_Converter.Server.Models;
 
-public record Cart(
+public record Cart ( 
     string id,
-    Item[] items
+	Item[] items
  );
 
 public record Item(
@@ -10,3 +10,9 @@ public record Item(
     float price,
     string currency
 );
+
+public static class Carts {
+
+	public static List<Cart> CartsOnFile = new List<Cart>();
+
+};
