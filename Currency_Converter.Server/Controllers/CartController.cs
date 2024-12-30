@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Currency_Converter.Server.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("[controller]")]
 	[ApiController]
 	public class CartController : ControllerBase
 	{
@@ -32,16 +32,19 @@ namespace Currency_Converter.Server.Controllers
 			}
 		}
 
-		// PUT api/<CartController>/5
-		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
-		{
-		}
-
 		// DELETE api/<CartController>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public IActionResult Delete(string id)
 		{
+			try
+			{
+				Carts.CartsOnFile.Remove(Carts.CartsOnFile.FirstOrDefault(e => e.id == id));
+				return Ok(id);
+			}
+			catch
+			{
+				return BadRequest("Could not find the specified cart");
+			}
 		}
 	}
 }
