@@ -1,0 +1,6 @@
+@Currency_Converter.Server_HostAddress = http://localhost:5242
+
+GET {{Currency_Converter.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
