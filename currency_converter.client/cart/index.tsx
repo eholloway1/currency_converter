@@ -14,11 +14,12 @@ interface Item{
 }
 
 function CartRetriever() {
-  const [cart, setCart] = useState<Cart>();
+    const [cart, setCart] = useState<Cart>();
   const { tx } = useParams();
   const transaction = useRef(tx as string);
   console.log(transaction.current);
-  
+    
+
   useEffect(() => {
     fetchCartData(transaction.current);
   }, []);
@@ -51,9 +52,10 @@ function CartRetriever() {
   );
 
   async function fetchCartData(id: string) {
-    const response = await fetch(`https://localhost:7052/Cart/${id}`);
+    const response = await fetch(`cart/${id}`);
     const data = await response.json();
     setCart(data);
+      console.log(cart);
   }
 }
 
