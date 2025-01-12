@@ -12,7 +12,8 @@ namespace Currency_Converter.Server.Controllers
 	{
 
 		// GET api/<CartController>/5
-		[HttpGet("{id}")]
+		[HttpGet]
+		[Route("{id}")]
 		public ActionResult<Cart> Get(string id)
 		{
 			return Carts.CartsOnFile.FirstOrDefault(e => e.id == id) ?? throw new Exception("Cart Not found");

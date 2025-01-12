@@ -2,26 +2,32 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import './App.css';
 
-interface Cart {
-    id: string;
-    items: Item[];
+export interface Cart {
+    id: string
+    items: Item[]
 }
 
 interface Item {
-    name: string;
-    price: number;
-    currency: string;
+    name: string
+    price: number
+    currency: string
 }
 
 function CartRetriever() {
-    const [cart, setCart] = useState<Cart>();
+    const [cart, setCart] = useState<Cart | null>();
     const { tx } = useParams();
     const transaction = useRef(tx as string);
     console.log(transaction.current);
 
 
     useEffect(() => {
-        fetchCartData(transaction.current);
+        const getCart = async () => {
+            const res = await fetchCartData(transaction.current);
+            setCart(res);
+
+            console.log(cart?.id);
+        }
+        getCart();
     }, []);
 
     const contents = <table className="table table-striped" aria-labelledby="tableLabel">
@@ -36,10 +42,10 @@ function CartRetriever() {
         <tbody>
             {cart?.items.map(cart =>
                 <tr key={cart.name}>
+                    <td>{cart.name}</td>
                     <td>{cart.price}</td>
                     <td>{cart.currency}</td>
-                </tr>
-            )}
+                </tr>)}
         </tbody>
     </table>;
 
@@ -51,16 +57,15 @@ function CartRetriever() {
         </div>
     );
 
-    async function fetchCartData(id: string) {
-        const response = await fetch(`cart/${id}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            }
+    async function fetchCartData(id: string): Promise<Cart> {
+        const response = await fetch(`Cart/${id}`, {
+            method: 'GET'
         });
-        const data = await response.json();
-        setCart(data);
-        console.log(cart);
+        const data = response.json();
+
+        console.log(data);
+
+        return data;
     }
 }
 
