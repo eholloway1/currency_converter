@@ -4,13 +4,11 @@ import './App.css';
 import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -22,6 +20,7 @@ export interface Cart {
 interface Item {
     name: string
     price: number
+    tax: number
     currency: string
 }
 
@@ -36,6 +35,8 @@ function CartRetriever() {
     const { tx } = useParams();
     const transaction = useRef(tx as string);
     const [open, setOpen] = useState(true);
+    const [total, setTotal] = useState(0);
+    const [currency, setCurrency] = useState("usd");
 
     const handleClick = () => {
         setOpen(!open);
@@ -45,66 +46,42 @@ function CartRetriever() {
         const getCart = async () => {
             const res = await fetchCartData(transaction.current);
             setCart(res);
-
-            console.log(cart?.id);
         }
         getCart();
-    }, []);
-
-    const contents = <table className="table table-striped" aria-labelledby="tableLabel">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            {cart?.items.map(cart =>
-                <tr key={cart.name}>
-                    <td>{cart.name}</td>
-                    <td>{cart.price}</td>
-                    <td>{cart.currency}</td>
-                </tr>)}
-        </tbody>
-    </table>;
+        let t = 0;
+        cart?.items.map(item => t += item.price + item.tax);
+        setTotal(t);
+        console.log(total);
+    }, [total]);
 
     return (
         <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
+            <h2 id="tableLabel">Payment Summary</h2>
             <ThemeProvider theme={darkTheme}>
                 <CssBaseline />
-            <List
-                sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-                component="nav"
-                aria-labelledby="nested-list-subheader"
-                subheader={
-                    <ListSubheader component="div" id="nested-list-subheader">
-                        Nested List Items
-                    </ListSubheader>
-                }
-            >
-                <ListItemButton onClick={handleClick}>
-                    <ListItemIcon>
-                        <InboxIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Inbox" />
-                    {open ? <ExpandLess /> : <ExpandMore />}
-                </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        <ListItemButton sx={{ pl: 4 }}>
-                            <ListItemIcon>
-                                <StarBorder />
-                            </ListItemIcon>
-                            <ListItemText primary="Starred" />
+                <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                    component="nav" aria-labelledby="nested-list-subheader">
+                    {cart?.items.map((item) => {
+                        return <><ListItemButton onClick={handleClick}>
+                            <ListItemText primary={item.name} />
+                            {item.price + item.tax + " " + currency}
+                            {open ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
-                    </List>
-                </Collapse>
+                            <Collapse in={open} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    <ListItem sx={{ pl: 4, pt: 0, pb: 0, pr: 6 }}>
+                                        <ListItemText primary={"price:"} />
+                                        {item.price + " " + item.currency}
+                                    </ListItem>
+                                    <ListItem sx={{ pl: 4, pt: 0, pb: 0, pr: 6 }}>
+                                        <ListItemText primary={"tax:"} />
+                                        {item.tax + " " + item.currency}
+                                    </ListItem>
+                                </List>
+                            </Collapse></>
+                    })}
                 </List>
+                Total: {total + " " + currency}
             </ThemeProvider>
         </div>
     );

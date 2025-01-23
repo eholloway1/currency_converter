@@ -1,4 +1,7 @@
-﻿namespace Currency_Converter.Server.Models;
+﻿using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Numerics;
+
+namespace Currency_Converter.Server.Models;
 
 public record Cart ( 
     string id,
@@ -8,6 +11,7 @@ public record Cart (
 public record Item(
     string name,
     float price,
+	float tax,
     string currency
 );
 
