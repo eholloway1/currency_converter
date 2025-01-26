@@ -39,12 +39,21 @@ function CartRetriever() {
     const [cart, setCart] = useState<Cart | null>();
     const { tx } = useParams();
     const transaction = useRef(tx as string);
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState<(boolean| undefined)[]>([]);
     const [total, setTotal] = useState(0);
     const [currency, setCurrency] = useState("usd");
+    
+    const handleClick = (index: number) => {
+        const list = open.map((o, i) => {
+            if (index === i) {
+               return !o;
+            }
+            else {
+                return o;
+            }
+        });
 
-    const handleClick = () => {
-        setOpen(!open);
+        setOpen(list);
     };
 
     useEffect(() => {
@@ -57,10 +66,11 @@ function CartRetriever() {
         }
         else {
             setTotal(getTotal(cart));
+            cart.items.forEach(() => setOpen([...open, false]));
         }
     }, [cart]);
 
-    
+
 
     return (
         <div>
@@ -69,14 +79,14 @@ function CartRetriever() {
                 <CssBaseline />
                 <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                     component="nav" aria-labelledby="nested-list-subheader">
-                    {cart?.items.map((item) => {
+                    {cart?.items.map((item, index) => {
                         return <>
-                            <ListItemButton onClick={handleClick}>
-                            <ListItemText primary={item.name} />
-                            {item.price + item.tax + " " + currency}
-                            {open ? <ExpandLess /> : <ExpandMore />}
-                        </ListItemButton>
-                            <Collapse in={open} timeout="auto" unmountOnExit>
+                            <ListItemButton onClick={() => handleClick(index)}>
+                                <ListItemText primary={item.name} />
+                                {item.price + item.tax + " " + currency}
+                                {open ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+                            <Collapse in={open[index]} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
                                     <ListItem sx={{ pl: 3, pt: 0, pb: 0, pr: 7 }}>
                                         <ListItemText primary={"price:"} />
@@ -94,7 +104,7 @@ function CartRetriever() {
                 <ListItem sx={{ pl: 2, pt: 0, pb: 0, pr: 5 }}>
                     <ListItemText primary={"Total:"} />
                     {total + " " + currency}
-                </ListItem>                
+                </ListItem>
             </ThemeProvider>
         </div>
     );
