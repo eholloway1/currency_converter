@@ -1,5 +1,6 @@
 ﻿using Currency_Converter.Server.Models;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -25,12 +26,19 @@ namespace Currency_Converter.Server.Controllers
 		{
 			try
 			{
+				foreach (var item in cart.items)
+				{
+					if(item.currency != cart.items[0].currency)
+					{
+						throw new Exception("your cart needs to have the same currency for all items");
+					}
+				}
 				Carts.CartsOnFile.Add(cart);
 				return Ok(cart.id);
 			}
-			catch
+			catch(Exception ex)
 			{
-				return BadRequest("Check your cart structure");
+				return BadRequest(ex.Message);
 			}
 		}
 
