@@ -30,6 +30,11 @@ const darkTheme = createTheme({
     },
 });
 
+function getTotal(cart: Cart) {
+    let t = 0;
+    cart?.items.map(item => t += item.price + item.tax);
+    return t;
+}
 function CartRetriever() {
     const [cart, setCart] = useState<Cart | null>();
     const { tx } = useParams();
@@ -47,12 +52,15 @@ function CartRetriever() {
             const res = await fetchCartData(transaction.current);
             setCart(res);
         }
-        getCart();
-        let t = 0;
-        cart?.items.map(item => t += item.price + item.tax);
-        setTotal(t);
-        console.log(total);
-    }, [total]);
+        if (!cart) {
+            getCart();
+        }
+        else {
+            setTotal(getTotal(cart));
+        }
+    }, [cart]);
+
+    
 
     return (
         <div>
@@ -62,26 +70,31 @@ function CartRetriever() {
                 <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                     component="nav" aria-labelledby="nested-list-subheader">
                     {cart?.items.map((item) => {
-                        return <><ListItemButton onClick={handleClick}>
+                        return <>
+                            <ListItemButton onClick={handleClick}>
                             <ListItemText primary={item.name} />
                             {item.price + item.tax + " " + currency}
                             {open ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
                             <Collapse in={open} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    <ListItem sx={{ pl: 4, pt: 0, pb: 0, pr: 6 }}>
+                                    <ListItem sx={{ pl: 3, pt: 0, pb: 0, pr: 7 }}>
                                         <ListItemText primary={"price:"} />
                                         {item.price + " " + item.currency}
                                     </ListItem>
-                                    <ListItem sx={{ pl: 4, pt: 0, pb: 0, pr: 6 }}>
+                                    <ListItem sx={{ pl: 3, pt: 0, pb: 0, pr: 7 }}>
                                         <ListItemText primary={"tax:"} />
                                         {item.tax + " " + item.currency}
                                     </ListItem>
                                 </List>
-                            </Collapse></>
+                            </Collapse>
+                        </>
                     })}
                 </List>
-                Total: {total + " " + currency}
+                <ListItem sx={{ pl: 2, pt: 0, pb: 0, pr: 5 }}>
+                    <ListItemText primary={"Total:"} />
+                    {total + " " + currency}
+                </ListItem>                
             </ThemeProvider>
         </div>
     );
