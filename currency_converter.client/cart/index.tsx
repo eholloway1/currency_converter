@@ -24,6 +24,13 @@ interface Item {
     currency: string
 }
 
+const acceptedCurrencies = [
+    "usd",
+    "gpb",
+    "yen",
+    "cad"
+];
+
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
@@ -39,7 +46,8 @@ function CartRetriever() {
     const [cart, setCart] = useState<Cart | null>();
     const { tx } = useParams();
     const transaction = useRef(tx as string);
-    const [open, setOpen] = useState<(boolean| undefined)[]>([]);
+    const [open, setOpen] = useState<(boolean | undefined)[]>([]);
+    const [currencyDropOpen, setDropOpen] = useState(false);
     const [total, setTotal] = useState(0);
     const [currency, setCurrency] = useState("usd");
     
@@ -55,6 +63,14 @@ function CartRetriever() {
 
         setOpen(list);
     };
+
+    const currencyDropdownClick = () => {
+        setDropOpen(!currencyDropOpen);
+    };
+
+    const currencySelect = (cur: string) => {
+        setCurrency(cur);
+    }
 
     useEffect(() => {
         const getCart = async () => {
@@ -75,8 +91,27 @@ function CartRetriever() {
     return (
         <div>
             <h2 id="tableLabel">Payment Summary</h2>
+            
             <ThemeProvider theme={darkTheme}>
                 <CssBaseline />
+                <List sx={{ pl: 14, pt: 0, pr: 2, pb: 0, width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                    component="nav" aria-labelledby="nested-list-subheader">
+                    <ListItemButton onClick={currencyDropdownClick} sx={{ pl: 0, pt: 0, pr: 0, pb: 0 }}>
+                        <ListItemText primary="currency" />
+                        {currencyDropOpen ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={currencyDropOpen} timeout="auto" unmountOnExit>
+                    {acceptedCurrencies.map((c) => {
+                        return <>
+                                <List component="div" disablePadding>
+                                    <ListItemButton onClick={() => currencySelect(c)} >
+                                    <ListItemText primary={c} />
+                                    </ListItemButton>
+                                </List>
+                            
+                        </> }) }
+                    </Collapse>
+                </List>
                 <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
                     component="nav" aria-labelledby="nested-list-subheader">
                     {cart?.items.map((item, index) => {
@@ -84,17 +119,17 @@ function CartRetriever() {
                             <ListItemButton onClick={() => handleClick(index)}>
                                 <ListItemText primary={item.name} />
                                 {item.price + item.tax + " " + currency}
-                                {open ? <ExpandLess /> : <ExpandMore />}
+                                {open[index] ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>
                             <Collapse in={open[index]} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
                                     <ListItem sx={{ pl: 3, pt: 0, pb: 0, pr: 7 }}>
                                         <ListItemText primary={"price:"} />
-                                        {item.price + " " + item.currency}
+                                        {item.price + " " + currency}
                                     </ListItem>
                                     <ListItem sx={{ pl: 3, pt: 0, pb: 0, pr: 7 }}>
                                         <ListItemText primary={"tax:"} />
-                                        {item.tax + " " + item.currency}
+                                        {item.tax + " " + currency}
                                     </ListItem>
                                 </List>
                             </Collapse>
