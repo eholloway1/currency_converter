@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,6 +27,7 @@ namespace Currency_Converter.Server.Controllers
 		{
 			try
 			{
+				Carts.CartsOnFile.ForEach((c) => { if (c.id == cart.id) throw new Exception("Cart already exists"); });
 				foreach (var item in cart.items)
 				{
 					if(item.currency != cart.items[0].currency)
